@@ -1,0 +1,22 @@
+Package: rpackagefromorg
+Title: What the Package Does (One Line, Title Case)
+Version: 0.0.0.9000
+Authors@R: 
+    person(given = "Ilja",
+           family = "Kocken",
+           role = c("aut", "cre"),
+           email = "i.j.kocken@uu.nl",
+           comment = c(ORCID = "0000-0003-2196-8718"))
+Description: What the package does (one paragraph).
+License: GPL (>= 3)
+Encoding: UTF-8
+LazyData: true
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.1.1
+Imports: 
+    magrittr,
+    tibble
+Suggests: 
+    rmarkdown,
+    knitr
+VignetteBuilder: knitr

@@ -1,0 +1,99 @@
+#+TITLE: This is an R-package contained in a single org file
+
+Let's build a package! [[https://r-pkgs.org/man.html][Here]] is a nice book to explain what we're going to do!
+
+We can set up a blank package from an [[https://orgmode.org/][org-mode]] file like so!
+
+* R libraries needed
+We use [[https://devtools.r-lib.org/][devtools]] and [[https://usethis.r-lib.org/][usethis]] for the setup, [[https://roxygen2.r-lib.org/][roxygen2]] for the documentation,
+
+If you haven't installed them yet, run the following:
+#+begin_src R :eval never
+  install.packages(c("devtools", "usethis", "roxygen2"))
+#+end_src
+
+* write package functions
+R source code is writen here inline and then tangled to separate files in ~R~.
+** utility functions
+This is an example function.
+Here we use ~:tangle~ to export the file to the ~R/utils.R~.
+#+BEGIN_SRC R :tangle R/utils.R
+  #' Moving average
+  #'
+  #' @importFrom stats filter
+  #' @param x A vector to create the moving average for.
+  #' @param n The number of samples to create the moving average for.
+  #' @param sides the
+  #' @export
+  ma  <- function(x, n = 5, sides = 2) {
+     filter(x, rep(1/n, n), sides = sides)
+  }
+#+END_SRC
+
+** zzz
+There's often a zzz file to put several options in, like a startup message.
+#+BEGIN_SRC R :tangle R/zzz.R
+  .onAttach  <- function(libname, pkgname) {
+      packageStartupMessage("Welcome to ‘clumpedr’")
+  }
+#+END_SRC
+
+* set your desired usethis options
+This bit of code is run interactively (hence the ~:session~ argument to the org-src block) to set up the author and package info metadata.
+#+begin_src R :session :results none
+  options(
+   usethis.full_name = "Ilja Kocken",
+   usethis.description = list(
+     `Authors@R` = 'person("Ilja", "Kocken", email = "i.j.kocken@uu.nl", role = c("aut", "cre"),
+     comment = c(ORCID = "0000-0003-2196-8718"))',
+     Version = "0.0.0.9000")
+  )
+#+end_src
+
+* we need to load the libraries for the session
+#+begin_src R :session
+  library(devtools)
+  library(usethis)
+#+end_src
+
+* make the package and add dependencies interactively
+Now we run below options one by one in the ~:session~ to interactively set up the package skeleton!
+
+Be sure to answer the questions and to update the new files as they are created.
+
+#+BEGIN_SRC R :session
+  create_package("~/SurfDrive/PhD/programming/rpackagefromorg/") # example path to your package!
+  use_gpl3_license()
+  use_roxygen_md()
+  use_vignette("my-vignette")
+  use_pipe()
+  use_package_doc()
+  use_tibble()
+  document()
+#+END_SRC
+
+* This results in the following file structure
+#+begin_src sh :results output
+  tree
+#+end_src
+
+#+RESULTS:
+#+begin_example
+.
+├── DESCRIPTION
+├── LICENSE.md
+├── man
+│   ├── pipe.Rd
+│   └── rpackagefromorg-package.Rd
+├── NAMESPACE
+├── R
+│   ├── rpackagefromorg-package.R
+│   ├── utils-pipe.R
+│   ├── utils.Rmd
+│   └── zzz.R
+├── rpackagefromorg.org
+└── vignettes
+    └── my-vignette.Rmd
+
+3 directories, 11 files
+#+end_example
