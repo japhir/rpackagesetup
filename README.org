@@ -1,8 +1,8 @@
 #+TITLE: This is an R-package contained in a single org file
 
-Let's build a package! [[https://r-pkgs.org/man.html][Here]] is a nice book to explain what we're going to do!
+Let's build a package for [[cran.r-project.org/][R]]! [[https://r-pkgs.org/man.html][Here]] is a nice book to explain what we're going to do!
 
-We can set up a blank package from an [[https://orgmode.org/][org-mode]] file like so!
+(I use this single [[emacs.org/][Emacs]] [[https://orgmode.org/][org-mode]] file to do everything! But you can just work on the separate files as well)
 
 * R libraries needed
 We use [[https://devtools.r-lib.org/][devtools]] and [[https://usethis.r-lib.org/][usethis]] for the setup, [[https://roxygen2.r-lib.org/][roxygen2]] for the documentation,
@@ -12,11 +12,29 @@ If you haven't installed them yet, run the following:
   install.packages(c("devtools", "usethis", "roxygen2"))
 #+end_src
 
+* we need to load the libraries for the session
+# If you're also running this from org-mode, this bit of code is run interactively (hence the ~:session~ argument to the org-src block)
+#+begin_src R :session
+  library(devtools)
+  library(usethis)
+#+end_src
+
+* set your desired usethis options
+Run the below code to set up the author and package info metadata.
+#+begin_src R :session :results none
+  options(
+   usethis.full_name = "Ilja Kocken",
+   usethis.description = list(
+     `Authors@R` = 'person("Ilja", "Kocken", email = "i.j.kocken@uu.nl", role = c("aut", "cre"),
+     comment = c(ORCID = "0000-0003-2196-8718"))',
+     Version = "0.0.0.9000")
+  )
+#+end_src
+
 * write package functions
-R source code is writen here inline and then tangled to separate files in ~R~.
 ** utility functions
 This is an example function.
-Here we use ~:tangle~ to export the file to the ~R/utils.R~.
+Here we use ~:tangle~ to export the file to ~R/utils.R~, but you can of course also create a new file directly in the R subdirectory.
 #+BEGIN_SRC R :tangle R/utils.R
   #' Moving average
   #'
@@ -29,6 +47,22 @@ Here we use ~:tangle~ to export the file to the ~R/utils.R~.
      filter(x, rep(1/n, n), sides = sides)
   }
 #+END_SRC
+** your cool function
+Here's the basic syntax for roxygen function documentation directly next to the function definition.
+This is one of the examples from [[https://r-pkgs.org/man.html#man-workflow][the documentation workflow section of the r-pkgs book]].
+#+begin_src R :tangle R/add.R
+  #' Add together two numbers
+  #'
+  #' @param x A number.
+  #' @param y A number.
+  #' @return The sum of \code{x} and \code{y}.
+  #' @examples
+  #' add(1, 1)
+  #' add(10, 1)
+  add <- function(x, y) {
+    x + y
+  }
+#+end_src
 
 ** zzz
 There's often a zzz file to put several options in, like a startup message.
@@ -38,26 +72,8 @@ There's often a zzz file to put several options in, like a startup message.
   }
 #+END_SRC
 
-* set your desired usethis options
-This bit of code is run interactively (hence the ~:session~ argument to the org-src block) to set up the author and package info metadata.
-#+begin_src R :session :results none
-  options(
-   usethis.full_name = "Ilja Kocken",
-   usethis.description = list(
-     `Authors@R` = 'person("Ilja", "Kocken", email = "i.j.kocken@uu.nl", role = c("aut", "cre"),
-     comment = c(ORCID = "0000-0003-2196-8718"))',
-     Version = "0.0.0.9000")
-  )
-#+end_src
-
-* we need to load the libraries for the session
-#+begin_src R :session
-  library(devtools)
-  library(usethis)
-#+end_src
-
 * make the package and add dependencies interactively
-Now we run below options one by one in the ~:session~ to interactively set up the package skeleton!
+Now we run below options one by one to interactively set up the package skeleton!
 
 Be sure to answer the questions and to update the new files as they are created.
 
@@ -65,12 +81,22 @@ Be sure to answer the questions and to update the new files as they are created.
   create_package("~/SurfDrive/PhD/programming/rpackagefromorg/") # example path to your package!
   use_gpl3_license()
   use_roxygen_md()
-  use_vignette("my-vignette")
-  use_pipe()
   use_package_doc()
+  use_vignette("my-vignette")
+  usethis::use_testthat() # write tests for your functions!
+  use_test("add")
+  use_pipe()
   use_tibble()
   document()
 #+END_SRC
+
+* add package data
+Raw data that needs to be accessible can be stored in ~inst/~. This is best if you want to demonstrate how to load the data in your vignette.
+
+If you want the data available as a dataset, loadable with ~data(nameofdata)~, put it in ~data/~ as a ~.rds~ (R data structure) file.
+In this case it's probably a good idea to include the source code + raw data in ~data-raw/~.
+
+See [[https://r-pkgs.org/data.html#documenting-data][this section on how to document data]].
 
 * This results in the following file structure
 #+begin_src sh :results output
@@ -84,17 +110,27 @@ Be sure to answer the questions and to update the new files as they are created.
 ├── DESCRIPTION
 ├── LICENSE.md
 ├── man
+│   ├── add.Rd
+│   ├── ma.Rd
 │   ├── pipe.Rd
 │   └── rpackagefromorg-package.Rd
 ├── NAMESPACE
 ├── R
+│   ├── add.R
 │   ├── rpackagefromorg-package.R
 │   ├── utils-pipe.R
+│   ├── utils.R
 │   ├── utils.Rmd
 │   └── zzz.R
-├── rpackagefromorg.org
+├── README.org
+├── tests
+│   ├── testthat
+│   │   └── test-add.R
+│   └── testthat.R
 └── vignettes
     └── my-vignette.Rmd
 
-3 directories, 11 files
+5 directories, 17 files
 #+end_example
+
+* Now feel free to edit all those files separately!
