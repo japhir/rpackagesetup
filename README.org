@@ -1,4 +1,4 @@
-#+TITLE: This is an R-package contained in a single org file
+#+TITLE: Setting up an R package from scratch
 
 Let's build a package for [[cran.r-project.org/][R]]! [[https://r-pkgs.org/man.html][Here]] is a nice book to explain what we're going to do!
 
@@ -83,7 +83,7 @@ Be sure to answer the questions and to update the new files as they are created.
   use_roxygen_md()
   use_package_doc()
   use_vignette("my-vignette")
-  usethis::use_testthat() # write tests for your functions!
+  use_testthat() # write tests for your functions!
   use_test("add")
   use_pipe()
   use_tibble()
